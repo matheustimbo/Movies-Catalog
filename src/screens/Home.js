@@ -17,6 +17,7 @@ import {
 import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 import LinearGradient from 'react-native-linear-gradient';
 import { CollapsibleHeaderScrollView } from 'react-native-collapsible-header-views';
+import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 
 const API_KEY = 'ab7e70767dfe42f8f72cd8b9e592a44c'
 const IMAGE_REQUEST = 'https://image.tmdb.org/t/p/w500'
@@ -44,7 +45,7 @@ export default class Home extends Component {
         });
     };
 
-    componentWillMount = () => {
+    UNSAFE_componentWillMount = () => {
         if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
             UIManager.setLayoutAnimationEnabledExperimental(true);
         }
@@ -118,6 +119,34 @@ export default class Home extends Component {
         )
     }
 
+    renderMoviesSkeleton = () => {
+        return(
+            <View style={styles.moviesSkeletonContainer}>
+                <ShimmerPlaceHolder
+                    style={styles.movieImageSkeletonPlaceholder}
+                    autoRun
+                    visible={this.state.visible}
+                />
+                <ShimmerPlaceHolder
+                    style={styles.movieImageSkeletonPlaceholder}
+                    autoRun
+                    visible={this.state.visible}
+                />
+                <ShimmerPlaceHolder
+                    style={styles.movieImageSkeletonPlaceholder}
+                    autoRun
+                    visible={this.state.visible}
+                />
+                <ShimmerPlaceHolder
+                    style={styles.movieImageSkeletonPlaceholder}
+                    autoRun
+                    visible={this.state.visible}
+                />
+            </View>
+            
+        )
+    }
+
     render() {
         return (
             <View style={{ flex: 1, backgroundColor: '#EDEEF2' }}>
@@ -150,9 +179,7 @@ export default class Home extends Component {
                             <View style={styles.movieListContainer}>
                                 {this.state.loading ?
                                     (
-                                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                            <ActivityIndicator size="large" color="#202126" />
-                                        </View>
+                                        this.renderMoviesSkeleton()
                                     )
                                     :
                                     (
@@ -248,6 +275,18 @@ const styles = StyleSheet.create({
         marginTop: 16,
         marginRight: 16,
         borderRadius: 10
+    },
+    movieImageSkeletonPlaceholder: {
+        width: width / 2 - width * 0.05 - 8,
+        height: (width / 2 - 16) * 1.6,
+        borderRadius: 10,
+        marginTop: 16,
+    },
+    moviesSkeletonContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: "space-between"
     },
     slide2: {
         flex: 1,

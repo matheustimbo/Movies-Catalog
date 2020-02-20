@@ -21,6 +21,7 @@
     "react-native-paper": "^3.6.0",
     "react-native-safe-area-context": "^0.7.3",
     "react-native-screens": "^2.0.0-beta.7",
+    "react-native-shimmer-placeholder": "^1.0.35",
     "react-native-svg": "^11.0.1",
     "react-native-swiper": "^1.5.14",
     "react-native-vector-icons": "^6.6.0"
