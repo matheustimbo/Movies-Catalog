@@ -8,8 +8,8 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 import { Svg, Path } from 'react-native-svg'
 
-import Home from './Home';
-import Search from './Search';
+import Home from './screens/Home';
+import Search from './screens/Search';
 
 import HomeIcon from './assets/svgs/home.svg'
 

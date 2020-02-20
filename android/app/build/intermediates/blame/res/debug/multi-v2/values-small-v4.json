@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/matheustimbo/Documents/Estudos/React-Native/MoviesCatalog/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-small-v4/values-small-v4.xml",
+            "outputFile": "/Users/matheustimbo/Documents/Estudos/React-Native/Movies-Catalog/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-small-v4/values-small-v4.xml",
             "map": [
                 {
                     "source": "/Users/matheustimbo/.gradle/caches/transforms-2/files-2.1/3300928d5c7fc534131db02c26e7cc65/res/values-small-v4/values-small-v4.xml",

@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/matheustimbo/Documents/Estudos/React-Native/MoviesCatalog/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-kk/values-kk.xml",
+            "outputFile": "/Users/matheustimbo/Documents/Estudos/React-Native/Movies-Catalog/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-kk/values-kk.xml",
             "map": [
                 {
                     "source": "/Users/matheustimbo/.gradle/caches/transforms-2/files-2.1/36b0b4eb9ddef89a8a939d1292160af1/res/values-kk/values-kk.xml",

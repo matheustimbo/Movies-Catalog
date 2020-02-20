@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/matheustimbo/Documents/Estudos/React-Native/MoviesCatalog/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-ldltr-v21/values-ldltr-v21.xml",
+            "outputFile": "/Users/matheustimbo/Documents/Estudos/React-Native/Movies-Catalog/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-ldltr-v21/values-ldltr-v21.xml",
             "map": [
                 {
                     "source": "/Users/matheustimbo/.gradle/caches/transforms-2/files-2.1/69d49b650e22daf24b994fcae9a9351f/res/values-ldltr-v21/values-ldltr-v21.xml",
