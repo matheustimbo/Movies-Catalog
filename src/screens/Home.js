@@ -19,13 +19,18 @@ import LinearGradient from 'react-native-linear-gradient';
 import { CollapsibleHeaderScrollView } from 'react-native-collapsible-header-views';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 
+const { width, height } = Dimensions.get("window")
+
 const API_KEY = 'ab7e70767dfe42f8f72cd8b9e592a44c'
 const IMAGE_REQUEST = 'https://image.tmdb.org/t/p/w500'
 const UpComing = 'Upcoming'
 const Popular = 'Popular'
 const TopRated = 'TopRated'
 
-const { width, height } = Dimensions.get("window")
+const movieBannerWidth = width / 2 - width * 0.05 - 8
+const movieBannerHeight = (width / 2 - 16) * 1.6
+
+
 
 export default class Home extends Component {
 
@@ -121,15 +126,35 @@ export default class Home extends Component {
         )
     }
 
-    renderMovieBanner = movie => {
+    renderMovieBanner = (movie, index) => {
         return (
             <TouchableOpacity>
-                <Image
-                    style={styles.movieImage}
-                    source={{ uri: IMAGE_REQUEST + movie.poster_path }}
-                />
+                <View style={styles.movieImage}>
+                    {!movie.hasLoadedImage && <ShimmerPlaceHolder
+                        style={styles.movieImageSkeletonPlaceholder}
+                        autoRun
+                        visible={this.state.visible}
+                    />}
+                    <Image
+                        style={[styles.movieImage, movie.hasLoadedImage ? {opacity: 1} : {opacity: 0}, {position: 'absolute', left: 0, top: 0}]}
+                        source={{ uri: IMAGE_REQUEST + movie.poster_path }}
+                        onLoad={()=>{this.onImageLoadEnd(index)}}
+                    /> 
+                </View>
+                <Text 
+                numberOfLines={3}
+                style={{marginTop: 28, alignSelf: 'center', textAlign: 'center', maxWidth: movieBannerWidth}}>{movie.title}</Text>
             </TouchableOpacity>
         )
+    }
+
+    onImageLoadEnd = (index) => {
+        var movies = this.state.upComingMovies
+        console.log('movies', movies)
+        console.log('index', index)
+        console.log('movies index', movies[index])
+        movies[index].hasLoadedImage = true;
+        this.setState({upComingMovies: movies})
     }
 
     renderMoviesSkeleton = () => {
@@ -210,7 +235,7 @@ export default class Home extends Component {
                                                 nestedScrollEnabled
                                                 data={this.state.upComingMovies}
                                                 keyExtractor={movie => movie.id}
-                                                renderItem={({ item }) => this.renderMovieBanner(item)}
+                                                renderItem={({ item, index }) => this.renderMovieBanner(item, index)}
                                                 numColumns={2}
                                             />
                                         )
@@ -307,15 +332,15 @@ const styles = StyleSheet.create({
         width: width
     },
     movieImage: {
-        width: width / 2 - width * 0.05 - 8,
-        height: (width / 2 - 16) * 1.6,
+        width: movieBannerWidth,
+        height: movieBannerHeight,
         marginTop: 16,
         marginRight: 16,
-        borderRadius: 10
+        borderRadius: 10,
     },
     movieImageSkeletonPlaceholder: {
-        width: width / 2 - width * 0.05 - 8,
-        height: (width / 2 - 16) * 1.6,
+        width: movieBannerWidth,
+        height: movieBannerHeight,
         borderRadius: 10,
         marginTop: 16,
     },
