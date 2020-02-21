@@ -15,8 +15,9 @@ import {
     FlatList
 } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper'
+import LinearGradient from 'react-native-linear-gradient';
 import { CollapsibleHeaderScrollView } from 'react-native-collapsible-header-views';
-import LinearGradient from 'react-native-linear-gradient'
+import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 
 const API_KEY = 'ab7e70767dfe42f8f72cd8b9e592a44c'
 const IMAGE_REQUEST = 'https://image.tmdb.org/t/p/w500'
@@ -63,23 +64,23 @@ export default class Home extends Component {
         const { upComingMovies, upComingPaginationPage } = this.state;
         this.setState({ loading: true })
         fetch(`https://api.themoviedb.org/3/movie/upcoming?api_key=${API_KEY}&language=pt-BR&&include_image_language=pt-BR&page=${upComingPaginationPage}`)
-        .then((response) => response.json())
-        .then((responseJson) => {
-            this.setState({
-                upComingMovies: upComingPaginationPage == 1 ? 
-                responseJson.results : 
-                [...upComingMovies, ...responseJson.results], 
-            },()=>{
+            .then((response) => response.json())
+            .then((responseJson) => {
                 this.setState({
-                    upComingPaginationPage: upComingPaginationPage+1,
-                    loading: false
+                    upComingMovies: upComingPaginationPage == 1 ? 
+                    responseJson.results : 
+                    [...upComingMovies, ...responseJson.results], 
+                },()=>{
+                    this.setState({
+                        upComingPaginationPage: upComingPaginationPage+1,
+                        loading: false
+                    })
                 })
+                
             })
-            
-        })
-        .catch((error) => {
-            console.error(error);
-        });
+            .catch((error) => {
+                console.error(error);
+            });
     }
 
     renderHeader = () => {
@@ -134,6 +135,26 @@ export default class Home extends Component {
     renderMoviesSkeleton = () => {
         return(
             <View style={styles.moviesSkeletonContainer}>
+                <ShimmerPlaceHolder
+                    style={styles.movieImageSkeletonPlaceholder}
+                    autoRun
+                    visible={this.state.visible}
+                />
+                <ShimmerPlaceHolder
+                    style={styles.movieImageSkeletonPlaceholder}
+                    autoRun
+                    visible={this.state.visible}
+                />
+                <ShimmerPlaceHolder
+                    style={styles.movieImageSkeletonPlaceholder}
+                    autoRun
+                    visible={this.state.visible}
+                />
+                <ShimmerPlaceHolder
+                    style={styles.movieImageSkeletonPlaceholder}
+                    autoRun
+                    visible={this.state.visible}
+                />
             </View>
             
         )
