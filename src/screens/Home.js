@@ -12,7 +12,8 @@ import {
     ScrollView,
     StatusBar,
     ActivityIndicator,
-    FlatList
+    FlatList,
+    ImageBackground
 } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 import LinearGradient from 'react-native-linear-gradient';
@@ -40,19 +41,13 @@ export default class Home extends Component {
             moviesListOption: UpComing,
             upComingMovies: [],
             upComingPaginationPage: 1,
+            popularMovies: [],
+            popularMoviesPaginationPage: 1,
+            topRatedMovies: [],
+            topRatedPaginationPage: 1,
             paginatedScrollLoading: false,
             loading: false
         };
-    }
-
-    onEnableScroll = (value) => {
-        this.setState({
-            enableScrollViewScroll: value,
-        });
-    };
-
-    isCloseToBottom({layoutMeasurement, contentOffset, contentSize}){
-        return layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
     }
 
     UNSAFE_componentWillMount = () => {
@@ -62,103 +57,138 @@ export default class Home extends Component {
     }
 
     componentDidMount = () => {
-        this.loadMovies()
+        this.loadUpcomingMovies()
+        this.loadPopularMovies()
+        this.loadTopratedMovies()
     }
 
-    loadMovies = () => {
+    loadUpcomingMovies = () => {
         const { upComingMovies, upComingPaginationPage } = this.state;
         this.setState({ loading: true })
         fetch(`https://api.themoviedb.org/3/movie/upcoming?api_key=${API_KEY}&language=pt-BR&&include_image_language=pt-BR&page=${upComingPaginationPage}`)
             .then((response) => response.json())
             .then((responseJson) => {
                 this.setState({
-                    upComingMovies: upComingPaginationPage == 1 ? 
-                    responseJson.results : 
-                    [...upComingMovies, ...responseJson.results], 
-                },()=>{
+                    upComingMovies: upComingPaginationPage == 1 ?
+                        responseJson.results :
+                        [...upComingMovies, ...responseJson.results],
+                }, () => {
                     this.setState({
-                        upComingPaginationPage: upComingPaginationPage+1,
+                        upComingPaginationPage: upComingPaginationPage + 1,
                         loading: false
                     })
                 })
-                
+
             })
             .catch((error) => {
                 console.error(error);
             });
     }
 
-    renderHeader = () => {
+    loadPopularMovies = () => {
+        const { popularMovies, popularMoviesPaginationPage } = this.state;
+        this.setState({ loading: true })
+        fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=pt-BR&&include_image_language=pt-BR&page=${popularMoviesPaginationPage}`)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    popularMovies: popularMoviesPaginationPage == 1 ?
+                        responseJson.results :
+                        [...popularMovies, ...responseJson.results],
+                }, () => {
+                    this.setState({
+                        popularMoviesPaginationPage: popularMoviesPaginationPage + 1,
+                        loading: false
+                    })
+                })
+
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
+    loadTopratedMovies = () => {
+        const { topRatedMovies, topRatedPaginationPage } = this.state;
+        this.setState({ loading: true })
+        fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&language=pt-BR&&include_image_language=pt-BR&page=${topRatedPaginationPage}`)
+            .then((response) => response.json())
+            .then((responseJson) => {
+
+                this.setState({
+                    topRatedMovies: topRatedPaginationPage == 1 ?
+                        responseJson.results :
+                        [...topRatedMovies, ...responseJson.results],
+                }, () => {
+                    this.setState({
+                        topRatedPaginationPage: topRatedPaginationPage + 1,
+                        loading: false
+                    })
+                })
+
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
+    renderMovieBanner = (movie, index, movieList) => {
         return (
-            <View style={styles.headerContainer}>
-                <Text style={styles.discoverText}>DISCOVER</Text>
-                <View style={[styles.moviesListOptions]}>
-                    <TouchableOpacity
-                        onPress={() => {
-                            this.setState({ moviesListOption: UpComing })
-                            this.horizontalScroll.scrollTo({ x: 0, y: 0, animated: true })
-                        }}
+            <View style={styles.movieItemContainer}>
+                <TouchableOpacity
+                    style={styles.movieImage}
+                >
+                    {!movie.hasLoadedImage && <ShimmerPlaceHolder
+                        style={styles.movieImageSkeletonPlaceholder}
+                        autoRun
+                    />}
+                    <ImageBackground
+                        style={[styles.movieImage, movie.hasLoadedImage ? { opacity: 1 } : { opacity: 0 }, { position: 'absolute', left: 0, top: 0 }]}
+                        source={{ uri: IMAGE_REQUEST + movie.poster_path }}
+                        onLoad={() => { this.onImageLoadEnd(index, movieList) }}
+                        imageStyle={{ borderRadius: 10 }}
                     >
-                        <Text style={[styles.moviesListOption, this.state.moviesListOption == UpComing ? styles.moviesListOptionActive : styles.moviesListOptionInactive]}>Upcoming</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => {
-                            this.setState({ moviesListOption: Popular })
-                            this.horizontalScroll.scrollTo({ x: width, y: 0, animated: true })
-                        }}
-                    >
-                        <Text style={[styles.moviesListOption, this.state.moviesListOption == Popular ? styles.moviesListOptionActive : styles.moviesListOptionInactive]}>Popular</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => {
-                            this.setState({ moviesListOption: TopRated })
-                            this.horizontalScroll.scrollTo({ x: width * 2, y: 0, animated: true })
-                        }}
-                    >
-                        <Text style={[styles.moviesListOption, this.state.moviesListOption == TopRated ? styles.moviesListOptionActive : styles.moviesListOptionInactive]}>Top Rated</Text>
-                    </TouchableOpacity>
-                </View>
-                <LinearGradient
-                    style={{ width: width, height: 5, position: 'absolute', left: 0, bottom: -5 }}
-                    colors={['rgba(0,0,0,0.12)', 'transparent']}
-                />
+                        <LinearGradient
+                            style={styles.movieBannerGradient}
+                            colors={['transparent', 'rgba(0,0,0,0.48)']}
+                        />
+                        <Text numberOfLines={4} style={styles.movieTitle}>{movie.title}</Text>
+                    </ImageBackground>
+                </TouchableOpacity>
             </View>
         )
     }
 
-    renderMovieBanner = (movie, index) => {
-        return (
-            <TouchableOpacity>
-                <View style={styles.movieImage}>
-                    {!movie.hasLoadedImage && <ShimmerPlaceHolder
-                        style={styles.movieImageSkeletonPlaceholder}
-                        autoRun
-                        visible={this.state.visible}
-                    />}
-                    <Image
-                        style={[styles.movieImage, movie.hasLoadedImage ? {opacity: 1} : {opacity: 0}, {position: 'absolute', left: 0, top: 0}]}
-                        source={{ uri: IMAGE_REQUEST + movie.poster_path }}
-                        onLoad={()=>{this.onImageLoadEnd(index)}}
-                    /> 
-                </View>
-                <Text 
-                numberOfLines={3}
-                style={{marginTop: 28, alignSelf: 'center', textAlign: 'center', maxWidth: movieBannerWidth}}>{movie.title}</Text>
-            </TouchableOpacity>
-        )
-    }
-
-    onImageLoadEnd = (index) => {
-        var movies = this.state.upComingMovies
-        console.log('movies', movies)
-        console.log('index', index)
-        console.log('movies index', movies[index])
+    onImageLoadEnd = (index, movieList) => {
+        var movies;
+        switch (movieList){
+            case UpComing:
+                movies = this.state.upComingMovies;
+                break;
+            case Popular:
+                movies = this.state.popularMovies;
+                break;
+            case TopRated:
+                movies = this.state.topRatedMovies;
+                break;
+        }
         movies[index].hasLoadedImage = true;
-        this.setState({upComingMovies: movies})
+        switch (movieList){
+            case UpComing:
+                this.setState({ upComingMovies: movies })
+                break;
+            case Popular:
+                this.setState({ popularMovies: movies })
+                break;
+            case TopRated:
+                this.setState({ topRatedMovies: movies })
+                break;
+        }
+        
     }
 
     renderMoviesSkeleton = () => {
-        return(
+        return (
             <View style={styles.moviesSkeletonContainer}>
                 <ShimmerPlaceHolder
                     style={styles.movieImageSkeletonPlaceholder}
@@ -170,18 +200,8 @@ export default class Home extends Component {
                     autoRun
                     visible={this.state.visible}
                 />
-                <ShimmerPlaceHolder
-                    style={styles.movieImageSkeletonPlaceholder}
-                    autoRun
-                    visible={this.state.visible}
-                />
-                <ShimmerPlaceHolder
-                    style={styles.movieImageSkeletonPlaceholder}
-                    autoRun
-                    visible={this.state.visible}
-                />
             </View>
-            
+
         )
     }
 
@@ -193,74 +213,112 @@ export default class Home extends Component {
                 />
 
                 <SafeAreaView style={{ flex: 1, backgroundColor: '#EDEEF2' }}>
-
-                    <CollapsibleHeaderScrollView
-                        CollapsibleHeaderComponent={this.renderHeader()}
-                        headerHeight={80}
-                        scrollEventThrottle={16}
-                        nestedScrollEnabled
-                        scrollEnabled={this.state.enableScrollViewScroll}
-                        statusBarHeight={-50}
-                        ref={(ref) => {
-                            this.verticalScroll = ref
-                        }}
-                        onScroll={({nativeEvent})=>{
-                            if(this.isCloseToBottom(nativeEvent) && !this.loading){
-                               this.setState({loading: true},()=>{
-                                   this.loadMovies()
-                               })
-                            }
-                        }}
-                        
-                        style={{ height: height - getStatusBarHeight(), width: width }}>
-                        <ScrollView
-                            horizontal
-                            pagingEnabled
-                            showsHorizontalScrollIndicator={false}
-                            nestedScrollEnabled
-                            ref={(ref) => {
-                                this.horizontalScroll = ref
-                            }}
-                        >
-                            <View style={styles.moviesContainer}>
-                                <View style={styles.movieListContainer}>
-                                    {this.state.loading && this.state.upComingPaginationPage == 1 ?
-                                        (
-                                            this.renderMoviesSkeleton()
-                                        )
-                                        :
-                                        (
-                                            <FlatList
-                                                scrollEnabled={false}
-                                                nestedScrollEnabled
-                                                data={this.state.upComingMovies}
-                                                keyExtractor={movie => movie.id}
-                                                renderItem={({ item, index }) => this.renderMovieBanner(item, index)}
-                                                numColumns={2}
-                                            />
-                                        )
-                                    }
-                                    
-                                </View>
-                                {this.state.loading && this.state.upComingPaginationPage != 1 && 
+                    <ScrollView style={{ flex: 1 }}>
+                        <Text style={styles.moviesListOption}>Upcoming</Text>
+                        <View style={styles.moviesContainer}>
+                            <View style={styles.movieListContainer}>
+                                {this.state.loading && this.state.upComingPaginationPage == 1 ?
                                     (
-                                        <View style={{marginVertical: 20}}>
-                                            <ActivityIndicator size="large" color="#C5C5C5" />
-                                        </View>
+                                        this.renderMoviesSkeleton()
+                                    )
+                                    :
+                                    (
+                                        <FlatList
+                                            horizontal
+                                            nestedScrollEnabled
+                                            data={this.state.upComingMovies}
+                                            keyExtractor={movie => movie.id}
+                                            renderItem={({ item, index }) => this.renderMovieBanner(item, index, UpComing)}
+                                            onEndReached={() => {
+                                                if (!this.loading) {
+                                                    this.setState({ loading: true }, () => {
+                                                        this.loadUpcomingMovies()
+                                                    })
+                                                }
+                                            }}
+                                        />
                                     )
                                 }
-                                
-                            </View>
-                            
-                            <View style={styles.slide2}>
-                                <Text style={styles.text}>Beautiful</Text>
-                            </View>
-                            <View style={styles.slide3}>
-                                <Text style={styles.text}>And simple</Text>
-                            </View>
-                        </ScrollView>
-                    </CollapsibleHeaderScrollView>
 
+                            </View>
+                        </View>
+
+                        <Text style={styles.moviesListOption}>Popular</Text>
+                        <View style={styles.moviesContainer}>
+                            <View style={styles.movieListContainer}>
+                                {this.state.loading && this.state.upComingPaginationPage == 1 ?
+                                    (
+                                        this.renderMoviesSkeleton()
+                                    )
+                                    :
+                                    (
+                                        <FlatList
+                                            horizontal
+                                            nestedScrollEnabled
+                                            data={this.state.popularMovies}
+                                            keyExtractor={movie => movie.id}
+                                            renderItem={({ item, index }) => this.renderMovieBanner(item, index, Popular)}
+                                            onEndReached={() => {
+                                                if (!this.loading) {
+                                                    this.setState({ loading: true }, () => {
+                                                        this.loadPopularMovies()
+                                                    })
+                                                }
+                                            }}
+                                        />
+                                    )
+                                }
+
+                            </View>
+                            {this.state.loading && this.state.upComingPaginationPage != 1 &&
+                                (
+                                    <View style={{ marginVertical: 20 }}>
+                                        <ActivityIndicator size="large" color="#C5C5C5" />
+                                    </View>
+                                )
+                            }
+
+                        </View>
+
+                        <Text style={styles.moviesListOption}>TopRated</Text>
+                        <View style={styles.moviesContainer}>
+                            <View style={styles.movieListContainer}>
+                                {this.state.loading && this.state.upComingPaginationPage == 1 ?
+                                    (
+                                        this.renderMoviesSkeleton()
+                                    )
+                                    :
+                                    (
+                                        <FlatList
+                                            horizontal
+                                            nestedScrollEnabled
+                                            data={this.state.topRatedMovies}
+                                            keyExtractor={movie => movie.id}
+                                            renderItem={({ item, index }) => this.renderMovieBanner(item, index, TopRated)}
+                                            onEndReached={() => {
+                                                if (!this.loading) {
+                                                    this.setState({ loading: true }, () => {
+                                                        this.loadTopratedMovies()
+                                                    })
+                                                }
+                                            }}
+                                        />
+                                    )
+                                }
+
+                            </View>
+                            {this.state.loading && this.state.upComingPaginationPage != 1 &&
+                                (
+                                    <View style={{ marginVertical: 20 }}>
+                                        <ActivityIndicator size="large" color="#C5C5C5" />
+                                    </View>
+                                )
+                            }
+
+                        </View>
+                        
+
+                    </ScrollView>
                 </SafeAreaView>
 
             </View>
@@ -269,6 +327,28 @@ export default class Home extends Component {
 }
 
 const styles = StyleSheet.create({
+    movieBannerGradient: {
+        width: movieBannerWidth,
+        height: movieBannerHeight / 2,
+        position: 'absolute',
+        left: 0,
+        bottom: 0,
+        borderBottomLeftRadius: 10,
+        borderBottomRightRadius: 10
+    },
+    movieTitle: {
+        fontWeight: 'bold',
+        fontSize: 16,
+        color: 'white',
+        maxWidth: movieBannerWidth - 16,
+        marginLeft: 8,
+        marginBottom: 8
+    },
+    movieItemContainer: {
+        width: movieBannerWidth + 16,
+        height: movieBannerHeight + 32,
+        paddingTop: 32
+    },
     headerContainer: {
         width: width,
         height: 80,
@@ -301,11 +381,12 @@ const styles = StyleSheet.create({
         color: '#C5C5C5',
     },
     moviesListOption: {
-        fontSize: 14,
+        fontSize: 18,
         fontWeight: 'bold',
-        marginRight: 14,
+        marginLeft: 22,
+        marginTop: 20,
         backgroundColor: '#EDEEF2',
-    },  
+    },
     discoverText: {
         color: 'black',
         fontSize: 24,
@@ -334,21 +415,20 @@ const styles = StyleSheet.create({
     movieImage: {
         width: movieBannerWidth,
         height: movieBannerHeight,
-        marginTop: 16,
         marginRight: 16,
-        borderRadius: 10,
+        justifyContent: 'flex-end'
     },
     movieImageSkeletonPlaceholder: {
         width: movieBannerWidth,
         height: movieBannerHeight,
         borderRadius: 10,
-        marginTop: 16,
     },
     moviesSkeletonContainer: {
         flex: 1,
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: "space-between"
+        justifyContent: "space-between",
+        paddingTop: 32,
     },
     slide2: {
         flex: 1,
