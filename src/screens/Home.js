@@ -161,7 +161,7 @@ export default class Home extends Component {
 
     onImageLoadEnd = (index, movieList) => {
         var movies;
-        switch (movieList){
+        switch (movieList) {
             case UpComing:
                 movies = this.state.upComingMovies;
                 break;
@@ -173,7 +173,7 @@ export default class Home extends Component {
                 break;
         }
         movies[index].hasLoadedImage = true;
-        switch (movieList){
+        switch (movieList) {
             case UpComing:
                 this.setState({ upComingMovies: movies })
                 break;
@@ -184,7 +184,7 @@ export default class Home extends Component {
                 this.setState({ topRatedMovies: movies })
                 break;
         }
-        
+
     }
 
     renderMoviesSkeleton = () => {
@@ -210,113 +210,89 @@ export default class Home extends Component {
             <View style={{ flex: 1, backgroundColor: '#EDEEF2' }}>
                 <StatusBar
                     backgroundColor="#EDEEF2"
+                    barStyle="dark-content"
                 />
 
                 <SafeAreaView style={{ flex: 1, backgroundColor: '#EDEEF2' }}>
                     <ScrollView style={{ flex: 1 }}>
                         <Text style={styles.moviesListOption}>Upcoming</Text>
                         <View style={styles.moviesContainer}>
-                            <View style={styles.movieListContainer}>
-                                {this.state.loading && this.state.upComingPaginationPage == 1 ?
-                                    (
-                                        this.renderMoviesSkeleton()
-                                    )
-                                    :
-                                    (
-                                        <FlatList
-                                            horizontal
-                                            nestedScrollEnabled
-                                            data={this.state.upComingMovies}
-                                            keyExtractor={movie => movie.id}
-                                            renderItem={({ item, index }) => this.renderMovieBanner(item, index, UpComing)}
-                                            onEndReached={() => {
-                                                if (!this.loading) {
-                                                    this.setState({ loading: true }, () => {
-                                                        this.loadUpcomingMovies()
-                                                    })
-                                                }
-                                            }}
-                                        />
-                                    )
-                                }
-
-                            </View>
+                            {this.state.loading && this.state.upComingPaginationPage == 1 ?
+                                (
+                                    this.renderMoviesSkeleton()
+                                )
+                                :
+                                (
+                                    <FlatList
+                                        horizontal
+                                        nestedScrollEnabled
+                                        data={this.state.upComingMovies}
+                                        keyExtractor={movie => movie.id}
+                                        renderItem={({ item, index }) => this.renderMovieBanner(item, index, UpComing)}
+                                        onEndReached={() => {
+                                            if (!this.loading) {
+                                                this.setState({ loading: true }, () => {
+                                                    this.loadUpcomingMovies()
+                                                })
+                                            }
+                                        }}
+                                    />
+                                )
+                            }
                         </View>
 
                         <Text style={styles.moviesListOption}>Popular</Text>
                         <View style={styles.moviesContainer}>
-                            <View style={styles.movieListContainer}>
-                                {this.state.loading && this.state.upComingPaginationPage == 1 ?
-                                    (
-                                        this.renderMoviesSkeleton()
-                                    )
-                                    :
-                                    (
-                                        <FlatList
-                                            horizontal
-                                            nestedScrollEnabled
-                                            data={this.state.popularMovies}
-                                            keyExtractor={movie => movie.id}
-                                            renderItem={({ item, index }) => this.renderMovieBanner(item, index, Popular)}
-                                            onEndReached={() => {
-                                                if (!this.loading) {
-                                                    this.setState({ loading: true }, () => {
-                                                        this.loadPopularMovies()
-                                                    })
-                                                }
-                                            }}
-                                        />
-                                    )
-                                }
-
-                            </View>
-                            {this.state.loading && this.state.upComingPaginationPage != 1 &&
+                            {this.state.loading && this.state.upComingPaginationPage == 1 ?
                                 (
-                                    <View style={{ marginVertical: 20 }}>
-                                        <ActivityIndicator size="large" color="#C5C5C5" />
-                                    </View>
+                                    this.renderMoviesSkeleton()
+                                )
+                                :
+                                (
+                                    <FlatList
+                                        horizontal
+                                        nestedScrollEnabled
+                                        data={this.state.popularMovies}
+                                        keyExtractor={movie => movie.id}
+                                        renderItem={({ item, index }) => this.renderMovieBanner(item, index, Popular)}
+                                        onEndReached={() => {
+                                            if (!this.loading) {
+                                                this.setState({ loading: true }, () => {
+                                                    this.loadPopularMovies()
+                                                })
+                                            }
+                                        }}
+                                    />
                                 )
                             }
-
                         </View>
 
                         <Text style={styles.moviesListOption}>TopRated</Text>
                         <View style={styles.moviesContainer}>
-                            <View style={styles.movieListContainer}>
-                                {this.state.loading && this.state.upComingPaginationPage == 1 ?
-                                    (
-                                        this.renderMoviesSkeleton()
-                                    )
-                                    :
-                                    (
-                                        <FlatList
-                                            horizontal
-                                            nestedScrollEnabled
-                                            data={this.state.topRatedMovies}
-                                            keyExtractor={movie => movie.id}
-                                            renderItem={({ item, index }) => this.renderMovieBanner(item, index, TopRated)}
-                                            onEndReached={() => {
-                                                if (!this.loading) {
-                                                    this.setState({ loading: true }, () => {
-                                                        this.loadTopratedMovies()
-                                                    })
-                                                }
-                                            }}
-                                        />
-                                    )
-                                }
-
-                            </View>
-                            {this.state.loading && this.state.upComingPaginationPage != 1 &&
+                            {this.state.loading && this.state.upComingPaginationPage == 1 ?
                                 (
-                                    <View style={{ marginVertical: 20 }}>
-                                        <ActivityIndicator size="large" color="#C5C5C5" />
-                                    </View>
+                                    this.renderMoviesSkeleton()
+                                )
+                                :
+                                (
+                                    <FlatList
+                                        horizontal
+                                        nestedScrollEnabled
+                                        data={this.state.topRatedMovies}
+                                        keyExtractor={movie => movie.id}
+                                        renderItem={({ item, index }) => this.renderMovieBanner(item, index, TopRated)}
+                                        onEndReached={() => {
+                                            if (!this.loading) {
+                                                this.setState({ loading: true }, () => {
+                                                    this.loadTopratedMovies()
+                                                })
+                                            }
+                                        }}
+                                    />
                                 )
                             }
-
                         </View>
-                        
+
 
                     </ScrollView>
                 </SafeAreaView>
@@ -410,18 +386,20 @@ const styles = StyleSheet.create({
     },
     moviesContainer: {
         flex: 1,
-        width: width
+        width: width,
+        flexDirection: 'row'
     },
     movieImage: {
         width: movieBannerWidth,
         height: movieBannerHeight,
-        marginRight: 16,
+        marginLeft: 10,
         justifyContent: 'flex-end'
     },
     movieImageSkeletonPlaceholder: {
         width: movieBannerWidth,
         height: movieBannerHeight,
         borderRadius: 10,
+        marginLeft: 16
     },
     moviesSkeletonContainer: {
         flex: 1,
@@ -429,6 +407,7 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: "space-between",
         paddingTop: 32,
+        marginLeft: 32
     },
     slide2: {
         flex: 1,
